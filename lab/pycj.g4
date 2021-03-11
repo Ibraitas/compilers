@@ -72,7 +72,9 @@ bodyContent:
      | assign
      | cast
      | condition
-     | print)
+     | print
+     | forCycle
+     | whileCycle)
      NEWLINE*
     ;
 
@@ -82,9 +84,9 @@ declareValue: type SPACE varName;
 //INITIALIZATION deprecated
 initValue: initInt | initFloat | initBool ;
 
-initInt: INT SPACE varName SPACE ASSIGN SPACE intValue ;
-initFloat: FLOAT SPACE varName SPACE ASSIGN SPACE floatValue ;
-initBool: BOOL SPACE varName SPACE ASSIGN SPACE boolValue ;
+initInt: INT SPACE varName SPACE ASSIGN SPACE (intValue | ariphmeticExpression) ;
+initFloat: FLOAT SPACE varName SPACE ASSIGN SPACE (floatValue | ariphmeticExpression) ;
+initBool: BOOL SPACE varName SPACE ASSIGN SPACE (boolValue | ariphmeticExpression) ;
 
 //ASSIGNMENT
 variableToValueAssignment: varName SPACE ASSIGN SPACE value ;
@@ -103,7 +105,7 @@ comparisonOperator: EQUAL | GREATER | GREATER_OR_EQUAL | LESS | LESS_OR_EQUAL | 
 logicalComparisonOperator: LOGICAL_AND | LOGICAL_OR ;
 comparisonAtom: varName | value | signature | TRUE | FALSE | ariphmeticExpression ;
 comparisonStatement: comparisonAtom (SPACE comparisonOperator SPACE comparisonAtom)*;
-comparisonLogicalStatement: comparisonStatement (SPACE logicalComparisonOperator SPACE comparisonStatement)*;
+comparisonLogicalStatement: LEFT_ROUND_BRACKET comparisonStatement (SPACE logicalComparisonOperator SPACE comparisonStatement)* RIGHT_ROUND_BRACKET;
 
 ifCondition: IF SPACE comparisonLogicalStatement SPACE LEFT_CURVY_BRACKET
     NEWLINE
@@ -121,13 +123,35 @@ ifCondition: IF SPACE comparisonLogicalStatement SPACE LEFT_CURVY_BRACKET
 condition: ifCondition NEWLINE;
 
 //ARIPHMETICS
-ariphmeticOperator: PLUS | MINUS | MULTIPLY | DIVISION ;
+ariphmeticOperator: PLUS | MINUS | MULTIPLY | DIVISION | MOD | POW ;
 ariphmeticAtom: (varName | value | ariphmeticAtomWithBrackets) (SPACE ariphmeticOperator SPACE (varName | value | ariphmeticAtomWithBrackets))+;
 ariphmeticAtomWithBrackets: LEFT_ROUND_BRACKET ariphmeticAtom+  RIGHT_ROUND_BRACKET;
 ariphmeticExpression: (ariphmeticAtomWithBrackets | ariphmeticAtom) (SPACE ariphmeticOperator SPACE (ariphmeticAtom | ariphmeticAtomWithBrackets))*;
 
 //PRINT
 print: PRINT LEFT_ROUND_BRACKET (varName | value | ariphmeticExpression) RIGHT_ROUND_BRACKET;
+
+//CYCLES
+cycleStart: initValue | assign | cast ;
+cycleEnd: variableToValueAssignment | variableToExpressionAssignment | variableToVariableAssignment | variableToExpressionCast | variableToExpressionCast | variableToValueCast;
+cycleStep: value | varName;
+cycleHead: LEFT_ROUND_BRACKET cycleStart SEMI SPACE cycleEnd SEMI SPACE cycleStep RIGHT_ROUND_BRACKET ;
+//comparisonLogicalStatement: LEFT_ROUND_BRACKET comparisonStatement (SPACE logicalComparisonOperator SPACE comparisonStatement)* RIGHT_ROUND_BRACK
+
+whileCycle: WHILE SPACE comparisonLogicalStatement SPACE LEFT_CURVY_BRACKET
+    NEWLINE
+    bodyContent*
+    TAB*
+    RIGHT_CURVY_BRACKET
+    ;
+
+forCycle: FOR SPACE cycleHead SPACE LEFT_CURVY_BRACKET
+    NEWLINE
+    bodyContent*
+    TAB*
+    RIGHT_CURVY_BRACKET
+    ;
+
 
 //LEXEMAS
 INT: 'int' ;
@@ -137,6 +161,8 @@ ASSIGN: '=' ;
 PLUS: '+' ;
 MULTIPLY: '*' ;
 DIVISION: '/' ;
+MOD: '%' ;
+POW: '^' ;
 MINUS : '-' ;
 POINT : '.' ;
 COMMA : ',' ;
@@ -168,3 +194,6 @@ TAB: [ \t]+ ;
 RETURN: 'return' ;
 PRINT: 'print' ;
 VOID: 'void' ;
+FOR: 'for' ;
+WHILE: 'while' ;
+SEMI: ';' ;
