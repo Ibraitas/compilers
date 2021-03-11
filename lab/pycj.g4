@@ -13,10 +13,6 @@ declare:
     (declareValue NEWLINE+)+
 ;
 
-init:
-    (initValue NEWLINE+)+
-    ;
-
 assign:
     (variableToValueAssignment NEWLINE+)+
     | (variableToVariableAssignment NEWLINE+)+
@@ -68,7 +64,7 @@ voidFunc:
 bodyContent:
      TAB*
      (declare
-     | init
+     | initValue
      | assign
      | cast
      | condition
@@ -132,11 +128,10 @@ ariphmeticExpression: (ariphmeticAtomWithBrackets | ariphmeticAtom) (SPACE ariph
 print: PRINT LEFT_ROUND_BRACKET (varName | value | ariphmeticExpression) RIGHT_ROUND_BRACKET;
 
 //CYCLES
-cycleStart: initValue | assign | cast ;
+cycleStart: initValue | variableToValueAssignment | variableToExpressionAssignment | variableToVariableAssignment | variableToExpressionCast | variableToExpressionCast | variableToValueCast ;
 cycleEnd: variableToValueAssignment | variableToExpressionAssignment | variableToVariableAssignment | variableToExpressionCast | variableToExpressionCast | variableToValueCast;
 cycleStep: value | varName;
 cycleHead: LEFT_ROUND_BRACKET cycleStart SEMI SPACE cycleEnd SEMI SPACE cycleStep RIGHT_ROUND_BRACKET ;
-//comparisonLogicalStatement: LEFT_ROUND_BRACKET comparisonStatement (SPACE logicalComparisonOperator SPACE comparisonStatement)* RIGHT_ROUND_BRACK
 
 whileCycle: WHILE SPACE comparisonLogicalStatement SPACE LEFT_CURVY_BRACKET
     NEWLINE
