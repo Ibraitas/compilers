@@ -168,7 +168,7 @@ RIGHT_ROUND_BRACKET: ')' ;
 LEFT_CURVY_BRACKET: '{' ;
 RIGHT_CURVY_BRACKET: '}' ;
 LOWERCASE : [a-z] ;
-ZERO : '0' ;
+ZERO : [0] ;
 NATURAL : [1-9] ;
 SPACE : ' ' ;
 NEWLINE : [ \n\r]+ ;
